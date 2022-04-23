@@ -1,0 +1,111 @@
+{
+  "Identity": {
+    "PeerID": "faketest"
+  },
+  "Datastore": {
+    "StorageMax": "",
+    "StorageGCWatermark": 0,
+    "GCPeriod": "",
+    "Spec": null,
+    "HashOnRead": false,
+    "BloomFilterSize": 0
+  },
+  "Addresses": {
+    "Swarm": null,
+    "Announce": null,
+    "AppendAnnounce": null,
+    "NoAnnounce": null,
+    "API": null,
+    "Gateway": null
+  },
+  "Mounts": {
+    "IPFS": "",
+    "IPNS": "",
+    "FuseAllowOther": false
+  },
+  "Discovery": {
+    "MDNS": {
+      "Enabled": false,
+      "Interval": 0
+    }
+  },
+  "Routing": {
+    "Type": ""
+  },
+  "Ipns": {
+    "RepublishPeriod": "",
+    "RecordLifetime": "",
+    "ResolveCacheSize": 0
+  },
+  "Bootstrap": null,
+  "Gateway": {
+    "HTTPHeaders": null,
+    "RootRedirect": "",
+    "Writable": false,
+    "PathPrefixes": null,
+    "APICommands": null,
+    "NoFetch": false,
+    "NoDNSLink": false,
+    "PublicGateways": null
+  },
+  "API": {
+    "HTTPHeaders": null
+  },
+  "Swarm": {
+    "AddrFilters": null,
+    "DisableBandwidthMetrics": false,
+    "DisableNatPortMap": false,
+    "RelayClient": {},
+    "RelayService": {},
+    "Transports": {
+      "Network": {},
+      "Security": {},
+      "Multiplexers": {}
+    },
+    "ConnMgr": {
+      "Type": "",
+      "LowWater": 0,
+      "HighWater": 0,
+      "GracePeriod": ""
+    },
+    "ResourceMgr": {}
+  },
+  "AutoNAT": {},
+  "Pubsub": {
+    "Router": "",
+    "DisableSigning": false
+  },
+  "Peering": {
+    "Peers": null
+  },
+  "DNS": {
+    "Resolvers": null
+  },
+  "Migration": {
+    "DownloadSources": null,
+    "Keep": ""
+  },
+  "Provider": {
+    "Strategy": ""
+  },
+  "Reprovider": {
+    "Interval": "",
+    "Strategy": ""
+  },
+  "Experimental": {
+    "FilestoreEnabled": false,
+    "UrlstoreEnabled": false,
+    "GraphsyncEnabled": false,
+    "Libp2pStreamMounting": false,
+    "P2pHttpProxy": false,
+    "StrategicProviding": false,
+    "AcceleratedDHTClient": false
+  },
+  "Plugins": {
+    "Plugins": null
+  },
+  "Pinning": {
+    "RemoteServices": null
+  },
+  "Internal": {}
+}
