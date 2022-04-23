@@ -14,14 +14,14 @@ import (
 	"io"
 
 	"github.com/ipfs/go-filestore"
-	"github.com/ipfs/go-ipfs-pinner"
+	pin "github.com/ipfs/go-ipfs-pinner"
 
 	bserv "github.com/ipfs/go-blockservice"
 	"github.com/ipfs/go-fetcher"
 	"github.com/ipfs/go-graphsync"
 	bstore "github.com/ipfs/go-ipfs-blockstore"
 	exchange "github.com/ipfs/go-ipfs-exchange-interface"
-	"github.com/ipfs/go-ipfs-provider"
+	provider "github.com/ipfs/go-ipfs-provider"
 	ipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log"
 	mfs "github.com/ipfs/go-mfs"
@@ -46,7 +46,6 @@ import (
 	"github.com/ipfs/go-ipfs/core/bootstrap"
 	"github.com/ipfs/go-ipfs/core/node"
 	"github.com/ipfs/go-ipfs/core/node/libp2p"
-	"github.com/ipfs/go-ipfs/fuse/mount"
 	"github.com/ipfs/go-ipfs/p2p"
 	"github.com/ipfs/go-ipfs/peering"
 	"github.com/ipfs/go-ipfs/repo"
@@ -66,7 +65,6 @@ type IpfsNode struct {
 
 	// Local node
 	Pinning         pin.Pinner             // the pinning manager
-	Mounts          Mounts                 `optional:"true"` // current mount state, if any.
 	PrivateKey      ic.PrivKey             `optional:"true"` // the local node's private Key
 	PNetFingerprint libp2p.PNetFingerprint `optional:"true"` // fingerprint of private network
 
@@ -115,14 +113,6 @@ type IpfsNode struct {
 	// Flags
 	IsOnline bool `optional:"true"` // Online is set when networking is enabled.
 	IsDaemon bool `optional:"true"` // Daemon is set when running on a long-running daemon.
-}
-
-// Mounts defines what the node's mount state is. This should
-// perhaps be moved to the daemon or mount. It's here because
-// it needs to be accessible across daemon requests.
-type Mounts struct {
-	Ipfs mount.Mount
-	Ipns mount.Mount
 }
 
 // Close calls Close() on the App object

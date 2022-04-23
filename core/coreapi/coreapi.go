@@ -197,13 +197,6 @@ func (api *CoreAPI) WithOptions(opts ...options.ApiOption) (coreiface.CoreAPI, e
 		return nil
 	}
 
-	subApi.checkPublishAllowed = func() error {
-		if n.Mounts.Ipns != nil && n.Mounts.Ipns.IsActive() {
-			return errors.New("cannot manually publish while IPNS is mounted")
-		}
-		return nil
-	}
-
 	if settings.Offline {
 		cfg, err := n.Repo.Config()
 		if err != nil {

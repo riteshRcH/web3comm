@@ -5,8 +5,7 @@ LABEL maintainer="Steven Allen <steven@stebalien.com>"
 # Install deps
 RUN apt-get update && apt-get install -y \
   libssl-dev \
-  ca-certificates \
-  fuse
+  ca-certificates
 
 ENV SRC_DIR /go-ipfs
 
@@ -57,11 +56,7 @@ COPY --from=0 $SRC_DIR/bin/container_daemon /usr/local/bin/start_ipfs
 COPY --from=0 $SRC_DIR/bin/container_init_run /usr/local/bin/container_init_run
 COPY --from=0 /tmp/su-exec/su-exec-static /sbin/su-exec
 COPY --from=0 /tmp/tini /sbin/tini
-COPY --from=0 /bin/fusermount /usr/local/bin/fusermount
 COPY --from=0 /etc/ssl/certs /etc/ssl/certs
-
-# Add suid bit on fusermount so it will run properly
-RUN chmod 4755 /usr/local/bin/fusermount
 
 # Fix permissions on start_ipfs (ignore the build machine's permissions)
 RUN chmod 0755 /usr/local/bin/start_ipfs

@@ -26,7 +26,6 @@ Otherwise, check out the following guides to using and developing IPFS:
     - [Datastore configuration](datastores.md)
     - [Experimental features](experimental-features.md)
 - [Installing command completion](command-completion.md)
-- [Mounting IPFS with FUSE](fuse.md)
 - [Installing plugins](plugins.md)
 - [Setting up an IPFS Gateway](https://github.com/ipfs/go-ipfs/blob/master/docs/gateway.md)
 

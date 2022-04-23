@@ -77,14 +77,6 @@ Network:
   ipfs cat <hash-of-remote-object>
 
 
-Mount:
-
-  (warning: fuse is finicky!)
-  ipfs mount
-  cd /ipfs/<the-hash-here>
-  ls
-
-
 Tool:
 
   ipfs version

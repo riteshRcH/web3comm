@@ -73,12 +73,6 @@ log tail` command.
 
 Warning: Enabling tracing will likely affect performance.
 
-## `IPFS_FUSE_DEBUG`
-
-Enables fuse debug logging.
-
-Default: false
-
 ## `YAMUX_DEBUG`
 
 Enables debug logging for the yamux stream muxer.

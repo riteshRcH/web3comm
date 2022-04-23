@@ -12,9 +12,7 @@
 #
 # For more info about custom unit files see systemd.unit(5).
 
-# This service file enables systemd-hardening features compatible with IPFS,
-# while breaking compatibility with the fuse-mount function. Use this one only 
-# if you don't need the fuse-mount functionality.
+# This service file enables systemd-hardening features compatible with IPFS
 
 [Unit]
 Description=InterPlanetary File System (IPFS) daemon

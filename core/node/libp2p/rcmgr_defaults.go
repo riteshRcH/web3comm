@@ -112,7 +112,7 @@ func checkImplicitDefaults() {
 		)
 	}
 	if !ok {
-		log.Fatal("daemon will refuse to run with the resource manager until this is resolved")
+		log.Fatal("daemon will refute to run with the resource manager until this is resolved")
 	}
 }
 

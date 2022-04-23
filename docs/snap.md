@@ -23,16 +23,6 @@ $ snap install --edge ipfs
 
 <img width="1072" alt="Dashboard for managaing go-ipfs snap release channels for go-ipfs" src="https://user-images.githubusercontent.com/58871/95761096-bcb34580-0ca3-11eb-8ce7-2496b2456335.png">
 
-## Known issues
-
-- `ipfs mount` fails as fusermount is not included in the snap, and cannot work from a snap as it is not able to create non-root mounts, see: https://github.com/elopio/ipfs-snap/issues/6
-
-```console
-ubuntu@primary:~$ ipfs mount
-2020-07-10T09:54:17.458+0100	ERROR	node	node/mount_unix.go:91	error mounting: fusermount: exec: "fusermount": executable file not found in $PATH
-2020-07-10T09:54:17.463+0100	ERROR	node	node/mount_unix.go:95	error mounting: fusermount: exec: "fusermount": executable file not found in $PATH
-```
-
 ## Developing
 
 We let launchpad.net build our snap for us, but if you need to edit the snapcraft.yml you can test it locally

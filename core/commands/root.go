@@ -50,7 +50,6 @@ TEXT ENCODING COMMANDS
 
 ADVANCED COMMANDS
   daemon        Start a long-running daemon process
-  mount         Mount an IPFS read-only mount point
   resolve       Resolve any type of name
   name          Publish and resolve IPNS names
   key           Create and list IPNS name keypairs
@@ -138,7 +137,6 @@ var rootSubcommands = map[string]*cmds.Command{
 	"key":       KeyCmd,
 	"log":       LogCmd,
 	"ls":        LsCmd,
-	"mount":     MountCmd,
 	"name":      name.NameCmd,
 	"object":    ocmd.ObjectCmd,
 	"pin":       pin.PinCmd,

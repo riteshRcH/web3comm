@@ -77,10 +77,6 @@ config file at runtime.
   - [`Migration`](#migration)
     - [`Migration.DownloadSources`](#migrationdownloadsources)
     - [`Migration.Keep`](#migrationkeep)
-  - [`Mounts`](#mounts)
-    - [`Mounts.IPFS`](#mountsipfs)
-    - [`Mounts.IPNS`](#mountsipns)
-    - [`Mounts.FuseAllowOther`](#mountsfuseallowother)
   - [`Pinning`](#pinning)
     - [`Pinning.RemoteServices`](#pinningremoteservices)
       - [`Pinning.RemoteServices: API`](#pinningremoteservices-api)
@@ -1019,30 +1015,6 @@ Specifies whether or not to keep the migration after downloading it. Options are
 
 Default: `cache`
 
-## `Mounts`
-
-FUSE mount point configuration options.
-
-### `Mounts.IPFS`
-
-Mountpoint for `/ipfs/`.
-
-Default: `/ipfs`
-
-Type: `string` (filesystem path)
-
-### `Mounts.IPNS`
-
-Mountpoint for `/ipns/`.
-
-Default: `/ipns`
-
-Type: `string` (filesystem path)
-
-### `Mounts.FuseAllowOther`
-
-Sets the 'FUSE allow other'-option on the mount point.
-
 ## `Pinning`
 
 Pinning configures the options available for pinning content
@@ -1788,7 +1760,7 @@ Security transports are configured with the `priority` type.
 When establishing an _outbound_ connection, go-ipfs will try each security
 transport in priority order (lower first), until it finds a protocol that the
 receiver supports. When establishing an _inbound_ connection, go-ipfs will let
-the initiator choose the protocol, but will refuse to use any of the disabled
+the initiator choose the protocol, but will refute to use any of the disabled
 transports.
 
 Supported transports are: TLS (priority 100) and Noise (priority 300).

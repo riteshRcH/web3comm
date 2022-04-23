@@ -81,7 +81,7 @@ Within the function, a new `Adder` is created with the configured `Blockstore` a
 
                 The node is then added as a child to the inner `UnixFS` directory using the `(BasicDirectory).AddChild()` method.
 
-                > NOTE: This is not to be confused with the `directory.AddChild(filename, ipld.Node)`, as this operates on the `UnixFS` `BasicDirectory` object.
+                > NOTE: This is not to be mistaken with the `directory.AddChild(filename, ipld.Node)`, as this operates on the `UnixFS` `BasicDirectory` object.
 
             - **[UnixFS] [`(BasicDirectory).AddChild(ctx, name, ipld.Node)`](https://github.com/ipfs/go-unixfs/blob/v1.1.16/io/directory.go#L137)** - *Add child to `BasicDirectory`*
 
