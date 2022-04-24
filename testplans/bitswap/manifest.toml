@@ -1,11 +1,11 @@
 name = "bitswap"
 
 [builders]
-  "docker:go" = { enabled = true, enable_go_build_cache = true }
+  "docker:go" = { enabled = false, enable_go_build_cache = false }
 
 [runners]
-  "local:docker" = { enabled = true }
-  "cluster:k8s" = { enabled = true }
+  "local:docker" = { enabled = false }
+  "cluster:k8s" = { enabled = false }
 
 [global.build_config]
   enable_go_build_cache = true

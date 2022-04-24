@@ -158,23 +158,9 @@ Default: false
 
 ### How to use Jaeger UI
 
-One can use the `jaegertracing/all-in-one` Docker image to run a full Jaeger
+One can use the `jaegertracing/all-in-one` image to run a full Jaeger
 stack and configure go-ipfs to publish traces to it (here, in an ephemeral
 container):
-
-```console
-$ docker run --rm -it --name jaeger \
-    -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
-    -p 5775:5775/udp \
-    -p 6831:6831/udp \
-    -p 6832:6832/udp \
-    -p 5778:5778 \
-    -p 16686:16686 \
-    -p 14268:14268 \
-    -p 14250:14250 \
-    -p 9411:9411 \
-    jaegertracing/all-in-one
-```
 
 Then, in other terminal, start go-ipfs with Jaeger tracing enabled:
 ```

@@ -69,14 +69,6 @@ Initializing daemon...
 go-ipfs version: 0.7.0-dev
 ```
 
-### Building in Docker
-
-[ipfs-shipyard/ipfs-snap](https://github.com/ipfs-shipyard/ipfs-snap) includes a Dockerfile that creates an image that can build go-ipfs from source and package it as a snap. It starts with `snapcore/snapcraft:stable` and adds in `go` and just enough tools to allow snapcraft to build go-ipfs. It is published to dockerhub as `ipfs/ipfs-snap-builder`.
-
-```console
-$ docker run -v $(pwd):/my-snap ipfs/ipfs-snap-builder:latest sh -c "apt update && cd /my-snap && snapcraft --debug"
-```
-
 ## Publishing the Snap
 
 The following snap release channels are published automatically:
