@@ -26,9 +26,6 @@ import (
 	coreiface "github.com/ipfs/interface-go-ipfs-core"
 	ipath "github.com/ipfs/interface-go-ipfs-core/path"
 	routing "github.com/libp2p/go-libp2p-core/routing"
-	prometheus "github.com/prometheus/client_golang/prometheus"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 )
 
@@ -68,16 +65,6 @@ type redirectTemplateData struct {
 type gatewayHandler struct {
 	config GatewayConfig
 	api    coreiface.CoreAPI
-
-	// generic metrics
-	firstContentBlockGetMetric *prometheus.HistogramVec
-	unixfsGetMetric            *prometheus.SummaryVec // deprecated, use firstContentBlockGetMetric
-
-	// response type metrics
-	unixfsFileGetMetric   *prometheus.HistogramVec
-	unixfsGenDirGetMetric *prometheus.HistogramVec
-	carStreamGetMetric    *prometheus.HistogramVec
-	rawBlockGetMetric     *prometheus.HistogramVec
 }
 
 // StatusResponseWriter enables us to override HTTP Status Code passed to
@@ -167,93 +154,10 @@ func (w *errRecordingResponseWriter) ReadFrom(r io.Reader) (n int64, err error) 
 	return n, err
 }
 
-func newGatewaySummaryMetric(name string, help string) *prometheus.SummaryVec {
-	summaryMetric := prometheus.NewSummaryVec(
-		prometheus.SummaryOpts{
-			Namespace: "ipfs",
-			Subsystem: "http",
-			Name:      name,
-			Help:      help,
-		},
-		[]string{"gateway"},
-	)
-	if err := prometheus.Register(summaryMetric); err != nil {
-		if are, ok := err.(prometheus.AlreadyRegisteredError); ok {
-			summaryMetric = are.ExistingCollector.(*prometheus.SummaryVec)
-		} else {
-			log.Errorf("failed to register ipfs_http_%s: %v", name, err)
-		}
-	}
-	return summaryMetric
-}
-
-func newGatewayHistogramMetric(name string, help string) *prometheus.HistogramVec {
-	// We can add buckets as a parameter in the future, but for now using static defaults
-	// suggested in https://github.com/ipfs/go-ipfs/issues/8441
-	defaultBuckets := []float64{0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 60}
-	histogramMetric := prometheus.NewHistogramVec(
-		prometheus.HistogramOpts{
-			Namespace: "ipfs",
-			Subsystem: "http",
-			Name:      name,
-			Help:      help,
-			Buckets:   defaultBuckets,
-		},
-		[]string{"gateway"},
-	)
-	if err := prometheus.Register(histogramMetric); err != nil {
-		if are, ok := err.(prometheus.AlreadyRegisteredError); ok {
-			histogramMetric = are.ExistingCollector.(*prometheus.HistogramVec)
-		} else {
-			log.Errorf("failed to register ipfs_http_%s: %v", name, err)
-		}
-	}
-	return histogramMetric
-}
-
 func newGatewayHandler(c GatewayConfig, api coreiface.CoreAPI) *gatewayHandler {
 	i := &gatewayHandler{
 		config: c,
 		api:    api,
-		// Improved Metrics
-		// ----------------------------
-		// Time till the first content block (bar in /ipfs/cid/foo/bar)
-		// (format-agnostic, across all response types)
-		firstContentBlockGetMetric: newGatewayHistogramMetric(
-			"gw_first_content_block_get_latency_seconds",
-			"The time till the first content block is received on GET from the gateway.",
-		),
-
-		// Response-type specific metrics
-		// ----------------------------
-		// UnixFS: time it takes to return a file
-		unixfsFileGetMetric: newGatewayHistogramMetric(
-			"gw_unixfs_file_get_duration_seconds",
-			"The time to serve an entire UnixFS file from the gateway.",
-		),
-		// UnixFS: time it takes to generate static HTML with directory listing
-		unixfsGenDirGetMetric: newGatewayHistogramMetric(
-			"gw_unixfs_gen_dir_listing_get_duration_seconds",
-			"The time to serve a generated UnixFS HTML directory listing from the gateway.",
-		),
-		// CAR: time it takes to return requested CAR stream
-		carStreamGetMetric: newGatewayHistogramMetric(
-			"gw_car_stream_get_duration_seconds",
-			"The time to GET an entire CAR stream from the gateway.",
-		),
-		// Block: time it takes to return requested Block
-		rawBlockGetMetric: newGatewayHistogramMetric(
-			"gw_raw_block_get_duration_seconds",
-			"The time to GET an entire raw Block from the gateway.",
-		),
-
-		// Legacy Metrics
-		// ----------------------------
-		unixfsGetMetric: newGatewaySummaryMetric( // TODO: remove?
-			// (deprecated, use firstContentBlockGetMetric instead)
-			"unixfs_get_latency_seconds",
-			"The time to receive the first UnixFS node on a GET from the gateway.",
-		),
 	}
 	return i
 }
@@ -388,8 +292,6 @@ func (i *gatewayHandler) getOrHeadHandler(w http.ResponseWriter, r *http.Request
 		webError(w, "error while processing the Accept header", err, http.StatusBadRequest)
 		return
 	}
-	trace.SpanFromContext(r.Context()).SetAttributes(attribute.String("ResponseFormat", responseFormat))
-	trace.SpanFromContext(r.Context()).SetAttributes(attribute.String("ResolvedPath", resolvedPath.String()))
 
 	// Detect when If-None-Match HTTP header allows returning HTTP 304 Not Modified
 	if inm := r.Header.Get("If-None-Match"); inm != "" {
@@ -1060,10 +962,6 @@ func (i *gatewayHandler) handleGettingFirstBlock(r *http.Request, begin time.Tim
 	if err != nil {
 		return newRequestError("ipfs block get "+resolvedPath.Cid().String(), err, http.StatusInternalServerError)
 	}
-	ns := contentPath.Namespace()
-	timeToGetFirstContentBlock := time.Since(begin).Seconds()
-	i.unixfsGetMetric.WithLabelValues(ns).Observe(timeToGetFirstContentBlock) // deprecated, use firstContentBlockGetMetric instead
-	i.firstContentBlockGetMetric.WithLabelValues(ns).Observe(timeToGetFirstContentBlock)
 	return nil
 }
 

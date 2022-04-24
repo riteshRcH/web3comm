@@ -190,9 +190,6 @@ func (i *gatewayHandler) serveDirectory(ctx context.Context, w http.ResponseWrit
 		internalWebError(w, err)
 		return
 	}
-
-	// Update metrics
-	i.unixfsGenDirGetMetric.WithLabelValues(contentPath.Namespace()).Observe(time.Since(begin).Seconds())
 }
 
 func getDirListingEtag(dirCid cid.Cid) string {

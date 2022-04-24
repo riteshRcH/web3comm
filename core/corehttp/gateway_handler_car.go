@@ -71,9 +71,6 @@ func (i *gatewayHandler) serveCAR(ctx context.Context, w http.ResponseWriter, r 
 		w.Header().Set("X-Stream-Error", err.Error())
 		return
 	}
-
-	// Update metrics
-	i.carStreamGetMetric.WithLabelValues(contentPath.Namespace()).Observe(time.Since(begin).Seconds())
 }
 
 type dagStore struct {

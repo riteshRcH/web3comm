@@ -79,11 +79,5 @@ func (i *gatewayHandler) serveFile(ctx context.Context, w http.ResponseWriter, r
 
 	// ServeContent will take care of
 	// If-None-Match+Etag, Content-Length and range requests
-	_, dataSent, _ := ServeContent(w, r, name, modtime, content)
-
-	// Was response successful?
-	if dataSent {
-		// Update metrics
-		i.unixfsFileGetMetric.WithLabelValues(contentPath.Namespace()).Observe(time.Since(begin).Seconds())
-	}
+	ServeContent(w, r, name, modtime, content)
 }

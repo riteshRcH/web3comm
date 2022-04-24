@@ -509,9 +509,6 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 		"commit":  version.CurrentCommit,
 	}).Set(1)
 
-	// initialize metrics collector
-	prometheus.MustRegister(&corehttp.IpfsNodeCollector{Node: node})
-
 	// start MFS pinning thread
 	startPinMFS(daemonConfigPollInterval, cctx, &ipfsPinMFSNode{node})
 
@@ -635,8 +632,6 @@ func serveHTTPApi(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, error
 	}
 
 	var opts = []corehttp.ServeOption{
-		corehttp.MetricsCollectionOption("api"),
-		corehttp.MetricsOpenCensusCollectionOption(),
 		corehttp.CheckVersionOption(),
 		corehttp.CommandsOption(*cctx),
 		corehttp.WebUIOption,
@@ -647,7 +642,6 @@ func serveHTTPApi(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, error
 		defaultMux("/debug/stack"),
 		corehttp.MutexFractionOption("/debug/pprof-mutex/"),
 		corehttp.BlockProfileRateOption("/debug/pprof-block/"),
-		corehttp.MetricsScrapingOption("/debug/metrics/prometheus"),
 		corehttp.LogOption(),
 	}
 
@@ -768,7 +762,6 @@ func serveHTTPGateway(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, e
 	cmdctx.Gateway = true
 
 	var opts = []corehttp.ServeOption{
-		corehttp.MetricsCollectionOption("gateway"),
 		corehttp.HostnameOption(),
 		corehttp.GatewayOption(writable, "/ipfs", "/ipns"),
 		corehttp.VersionOption(),
