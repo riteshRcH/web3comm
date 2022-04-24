@@ -18,7 +18,6 @@ import (
 	fsrepo "github.com/ipfs/go-ipfs/repo/fsrepo"
 
 	logging "github.com/ipfs/go-log"
-	opentracing "github.com/opentracing/opentracing-go"
 )
 
 var preloadPlugins []plugin.Plugin
@@ -248,13 +247,6 @@ func (loader *PluginLoader) Inject() error {
 				return err
 			}
 		}
-		if pl, ok := pl.(plugin.PluginTracer); ok {
-			err := injectTracerPlugin(pl)
-			if err != nil {
-				loader.state = loaderFailed
-				return err
-			}
-		}
 		if pl, ok := pl.(plugin.PluginDatastore); ok {
 			err := injectDatastorePlugin(pl)
 			if err != nil {
@@ -336,14 +328,4 @@ func injectDatastorePlugin(pl plugin.PluginDatastore) error {
 
 func injectIPLDPlugin(pl plugin.PluginIPLD) error {
 	return pl.Register(multicodec.DefaultRegistry)
-}
-
-func injectTracerPlugin(pl plugin.PluginTracer) error {
-	log.Warn("Tracer plugins are deprecated, it's recommended to configure an OpenTelemetry collector instead.")
-	tracer, err := pl.InitTracer()
-	if err != nil {
-		return err
-	}
-	opentracing.SetGlobalTracer(tracer)
-	return nil
 }

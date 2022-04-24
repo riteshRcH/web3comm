@@ -13,11 +13,8 @@ import (
 	coreiface "github.com/ipfs/interface-go-ipfs-core"
 	caopts "github.com/ipfs/interface-go-ipfs-core/options"
 	path "github.com/ipfs/interface-go-ipfs-core/path"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 
 	util "github.com/ipfs/go-ipfs/blocks/blockstoreutil"
-	"github.com/ipfs/go-ipfs/tracing"
 )
 
 type BlockAPI CoreAPI
@@ -28,9 +25,6 @@ type BlockStat struct {
 }
 
 func (api *BlockAPI) Put(ctx context.Context, src io.Reader, opts ...caopts.BlockPutOption) (coreiface.BlockStat, error) {
-	ctx, span := tracing.Span(ctx, "CoreAPI.BlockAPI", "Put")
-	defer span.End()
-
 	settings, pref, err := caopts.BlockPutOptions(opts...)
 	if err != nil {
 		return nil, err
@@ -71,8 +65,6 @@ func (api *BlockAPI) Put(ctx context.Context, src io.Reader, opts ...caopts.Bloc
 }
 
 func (api *BlockAPI) Get(ctx context.Context, p path.Path) (io.Reader, error) {
-	ctx, span := tracing.Span(ctx, "CoreAPI.BlockAPI", "Get", trace.WithAttributes(attribute.String("path", p.String())))
-	defer span.End()
 	rp, err := api.core().ResolvePath(ctx, p)
 	if err != nil {
 		return nil, err
@@ -87,8 +79,6 @@ func (api *BlockAPI) Get(ctx context.Context, p path.Path) (io.Reader, error) {
 }
 
 func (api *BlockAPI) Rm(ctx context.Context, p path.Path, opts ...caopts.BlockRmOption) error {
-	ctx, span := tracing.Span(ctx, "CoreAPI.BlockAPI", "Rm", trace.WithAttributes(attribute.String("path", p.String())))
-	defer span.End()
 
 	rp, err := api.core().ResolvePath(ctx, p)
 	if err != nil {
@@ -128,8 +118,6 @@ func (api *BlockAPI) Rm(ctx context.Context, p path.Path, opts ...caopts.BlockRm
 }
 
 func (api *BlockAPI) Stat(ctx context.Context, p path.Path) (coreiface.BlockStat, error) {
-	ctx, span := tracing.Span(ctx, "CoreAPI.BlockAPI", "Stat", trace.WithAttributes(attribute.String("path", p.String())))
-	defer span.End()
 
 	rp, err := api.core().ResolvePath(ctx, p)
 	if err != nil {

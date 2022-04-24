@@ -4,14 +4,11 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ipfs/go-ipfs/tracing"
 	coreiface "github.com/ipfs/interface-go-ipfs-core"
 	caopts "github.com/ipfs/interface-go-ipfs-core/options"
 	peer "github.com/libp2p/go-libp2p-core/peer"
 	routing "github.com/libp2p/go-libp2p-core/routing"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type PubSubAPI CoreAPI
@@ -25,8 +22,6 @@ type pubSubMessage struct {
 }
 
 func (api *PubSubAPI) Ls(ctx context.Context) ([]string, error) {
-	_, span := tracing.Span(ctx, "CoreAPI.PubSubAPI", "Ls")
-	defer span.End()
 
 	_, err := api.checkNode()
 	if err != nil {
@@ -37,8 +32,6 @@ func (api *PubSubAPI) Ls(ctx context.Context) ([]string, error) {
 }
 
 func (api *PubSubAPI) Peers(ctx context.Context, opts ...caopts.PubSubPeersOption) ([]peer.ID, error) {
-	_, span := tracing.Span(ctx, "CoreAPI.PubSubAPI", "Peers")
-	defer span.End()
 
 	_, err := api.checkNode()
 	if err != nil {
@@ -50,14 +43,10 @@ func (api *PubSubAPI) Peers(ctx context.Context, opts ...caopts.PubSubPeersOptio
 		return nil, err
 	}
 
-	span.SetAttributes(attribute.String("topic", settings.Topic))
-
 	return api.pubSub.ListPeers(settings.Topic), nil
 }
 
 func (api *PubSubAPI) Publish(ctx context.Context, topic string, data []byte) error {
-	_, span := tracing.Span(ctx, "CoreAPI.PubSubAPI", "Publish", trace.WithAttributes(attribute.String("topic", topic)))
-	defer span.End()
 
 	_, err := api.checkNode()
 	if err != nil {
@@ -69,8 +58,6 @@ func (api *PubSubAPI) Publish(ctx context.Context, topic string, data []byte) er
 }
 
 func (api *PubSubAPI) Subscribe(ctx context.Context, topic string, opts ...caopts.PubSubSubscribeOption) (coreiface.PubSubSubscription, error) {
-	_, span := tracing.Span(ctx, "CoreAPI.PubSubAPI", "Subscribe", trace.WithAttributes(attribute.String("topic", topic)))
-	defer span.End()
 
 	// Parse the options to avoid introducing silent failures for invalid
 	// options. However, we don't currently have any use for them. The only
@@ -114,8 +101,6 @@ func (sub *pubSubSubscription) Close() error {
 }
 
 func (sub *pubSubSubscription) Next(ctx context.Context) (coreiface.PubSubMessage, error) {
-	ctx, span := tracing.Span(ctx, "CoreAPI.PubSubSubscription", "Next")
-	defer span.End()
 
 	msg, err := sub.subscription.Next(ctx)
 	if err != nil {

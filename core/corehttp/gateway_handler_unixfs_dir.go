@@ -12,12 +12,9 @@ import (
 	cid "github.com/ipfs/go-cid"
 	files "github.com/ipfs/go-ipfs-files"
 	"github.com/ipfs/go-ipfs/assets"
-	"github.com/ipfs/go-ipfs/tracing"
 	path "github.com/ipfs/go-path"
 	"github.com/ipfs/go-path/resolver"
 	ipath "github.com/ipfs/interface-go-ipfs-core/path"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 )
 
@@ -25,9 +22,6 @@ import (
 //
 // It will return index.html if present, or generate directory listing otherwise.
 func (i *gatewayHandler) serveDirectory(ctx context.Context, w http.ResponseWriter, r *http.Request, resolvedPath ipath.Resolved, contentPath ipath.Path, dir files.Directory, begin time.Time, logger *zap.SugaredLogger) {
-	ctx, span := tracing.Span(ctx, "Gateway", "ServeDirectory", trace.WithAttributes(attribute.String("path", resolvedPath.String())))
-	defer span.End()
-
 	// HostnameOption might have constructed an IPNS/IPFS path using the Host header.
 	// In this case, we need the original path for constructing redirects
 	// and links that match the requested URL.

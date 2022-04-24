@@ -63,16 +63,6 @@ The logging format defaults to `color` when the output is a terminal, and `nocol
 
 Sets the file to which go-ipfs logs. By default, go-ipfs logs to standard error.
 
-## `GOLOG_TRACING_FILE`
-
-Sets the file to which go-ipfs sends tracing events. By default, tracing is
-disabled.
-
-This log can be read at runtime (without writing it to a file) using the `ipfs
-log tail` command.
-
-Warning: Enabling tracing will likely affect performance.
-
 ## `YAMUX_DEBUG`
 
 Enables debug logging for the yamux stream muxer.
@@ -139,59 +129,3 @@ and outputs it to `rcmgr.json.gz`
 
 
 Default: disabled (not set)
-
-# Tracing
-
-## `IPFS_TRACING`
-Enables OpenTelemetry tracing.
-
-**NOTE** Tracing support is experimental: releases may contain tracing-related breaking changes.
-
-Default: false
-
-## `IPFS_TRACING_JAEGER`
-Enables the Jaeger exporter for OpenTelemetry.
-
-For additional Jaeger exporter configuration, see: https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/sdk-environment-variables.md#jaeger-exporter
-
-Default: false
-
-### How to use Jaeger UI
-
-One can use the `jaegertracing/all-in-one` image to run a full Jaeger
-stack and configure go-ipfs to publish traces to it (here, in an ephemeral
-container):
-
-Then, in other terminal, start go-ipfs with Jaeger tracing enabled:
-```
-$ IPFS_TRACING=1 IPFS_TRACING_JAEGER=1 ipfs daemon
-```
-
-Finally, the [Jaeger UI](https://github.com/jaegertracing/jaeger-ui#readme) is available at http://localhost:16686
-
-
-## `IPFS_TRACING_OTLP_HTTP`
-Enables the OTLP HTTP exporter for OpenTelemetry.
-
-For additional exporter configuration, see: https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/protocol/exporter.md
-
-Default: false
-
-## `IPFS_TRACING_OTLP_GRPC`
-Enables the OTLP gRPC exporter for OpenTelemetry.
-
-For additional exporter configuration, see: https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/protocol/exporter.md
-
-Default: false
-
-## `IPFS_TRACING_FILE`
-Enables the file exporter for OpenTelemetry, writing traces to the given file in JSON format.
-
-Example: "/var/log/ipfs-traces.json"
-
-Default: "" (disabled)
-
-## `IPFS_TRACING_RATIO`
-The ratio of traces to export, as a floating point value in the interval [0, 1].
-
-Default: 1.0 (export all traces)

@@ -8,16 +8,11 @@ import (
 	"time"
 
 	files "github.com/ipfs/go-ipfs-files"
-	"github.com/ipfs/go-ipfs/tracing"
 	ipath "github.com/ipfs/interface-go-ipfs-core/path"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 )
 
 func (i *gatewayHandler) serveUnixFS(ctx context.Context, w http.ResponseWriter, r *http.Request, resolvedPath ipath.Resolved, contentPath ipath.Path, begin time.Time, logger *zap.SugaredLogger) {
-	ctx, span := tracing.Span(ctx, "Gateway", "ServeUnixFS", trace.WithAttributes(attribute.String("path", resolvedPath.String())))
-	defer span.End()
 	// Handling UnixFS
 	dr, err := i.api.Unixfs().Get(ctx, resolvedPath)
 	if err != nil {

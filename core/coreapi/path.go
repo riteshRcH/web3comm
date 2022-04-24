@@ -5,11 +5,7 @@ import (
 	"fmt"
 	gopath "path"
 
-	"github.com/ipfs/go-ipfs/tracing"
 	"github.com/ipfs/go-namesys/resolve"
-
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/ipfs/go-cid"
 	"github.com/ipfs/go-fetcher"
@@ -23,8 +19,6 @@ import (
 // ResolveNode resolves the path `p` using Unixfs resolver, gets and returns the
 // resolved Node.
 func (api *CoreAPI) ResolveNode(ctx context.Context, p path.Path) (ipld.Node, error) {
-	ctx, span := tracing.Span(ctx, "CoreAPI", "ResolveNode", trace.WithAttributes(attribute.String("path", p.String())))
-	defer span.End()
 
 	rp, err := api.ResolvePath(ctx, p)
 	if err != nil {
@@ -41,8 +35,6 @@ func (api *CoreAPI) ResolveNode(ctx context.Context, p path.Path) (ipld.Node, er
 // ResolvePath resolves the path `p` using Unixfs resolver, returns the
 // resolved path.
 func (api *CoreAPI) ResolvePath(ctx context.Context, p path.Path) (path.Resolved, error) {
-	ctx, span := tracing.Span(ctx, "CoreAPI", "ResolvePath", trace.WithAttributes(attribute.String("path", p.String())))
-	defer span.End()
 
 	if _, ok := p.(path.Resolved); ok {
 		return p.(path.Resolved), nil
