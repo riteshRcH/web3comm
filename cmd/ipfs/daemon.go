@@ -25,7 +25,6 @@ import (
 	commands "github.com/ipfs/go-ipfs/core/commands"
 	"github.com/ipfs/go-ipfs/core/coreapi"
 	corehttp "github.com/ipfs/go-ipfs/core/corehttp"
-	corerepo "github.com/ipfs/go-ipfs/core/corerepo"
 	libp2p "github.com/ipfs/go-ipfs/core/node/libp2p"
 	fsrepo "github.com/ipfs/go-ipfs/repo/fsrepo"
 	"github.com/ipfs/go-ipfs/repo/fsrepo/migrations"
@@ -172,7 +171,6 @@ Headers.
 		cmds.BoolOption(writableKwd, "Enable writing objects (with POST, PUT and DELETE)"),
 		cmds.BoolOption(unrestrictedApiAccessKwd, "Allow API access to unlisted hashes"),
 		cmds.BoolOption(unencryptTransportKwd, "Disable transport encryption (for debugging protocols)"),
-		cmds.BoolOption(enableGCKwd, "Enable automatic periodic repo garbage collection"),
 		cmds.BoolOption(adjustFDLimitKwd, "Check and raise file descriptor limits if needed").WithDefault(true),
 		cmds.BoolOption(migrateKwd, "If true, assume yes at the migrate prompt. If false, assume no."),
 		cmds.BoolOption(enablePubSubKwd, "Enable experimental pubsub feature. Overrides Pubsub.Enabled config."),
@@ -465,12 +463,6 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 		return err
 	}
 
-	// repo blockstore GC - if --enable-gc flag is present
-	gcErrc, err := maybeRunGC(req, node)
-	if err != nil {
-		return err
-	}
-
 	// Add any files downloaded by migration.
 	if cacheMigrations || pinMigrations {
 		err = addMigrations(cctx.Context(), node, fetcher, pinMigrations)
@@ -559,7 +551,7 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 
 	// collect long-running errors and block for shutdown
 	var errs error
-	for err := range merge(apiErrc, gwErrc, gcErrc) {
+	for err := range merge(apiErrc, gwErrc) {
 		if err != nil {
 			errs = multierror.Append(errs, err)
 		}
@@ -801,20 +793,6 @@ func serveHTTPGateway(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, e
 		close(errc)
 	}()
 
-	return errc, nil
-}
-
-func maybeRunGC(req *cmds.Request, node *core.IpfsNode) (<-chan error, error) {
-	enableGC, _ := req.Options[enableGCKwd].(bool)
-	if !enableGC {
-		return nil, nil
-	}
-
-	errc := make(chan error)
-	go func() {
-		errc <- corerepo.PeriodicGC(req.Context, node)
-		close(errc)
-	}()
 	return errc, nil
 }
 

@@ -3,7 +3,6 @@ package coreunix
 import (
 	"bytes"
 	"context"
-	"io"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -12,12 +11,10 @@ import (
 	"time"
 
 	"github.com/ipfs/go-ipfs/core"
-	"github.com/ipfs/go-ipfs/gc"
 	"github.com/ipfs/go-ipfs/repo"
 
 	blocks "github.com/ipfs/go-block-format"
 	"github.com/ipfs/go-blockservice"
-	"github.com/ipfs/go-cid"
 	"github.com/ipfs/go-datastore"
 	syncds "github.com/ipfs/go-datastore/sync"
 	blockstore "github.com/ipfs/go-ipfs-blockstore"
@@ -25,233 +22,9 @@ import (
 	pi "github.com/ipfs/go-ipfs-posinfo"
 	config "github.com/ipfs/go-ipfs/config"
 	dag "github.com/ipfs/go-merkledag"
-	coreiface "github.com/ipfs/interface-go-ipfs-core"
 )
 
 const testPeerID = "QmTFauExutTsy4XP6JbMFcw2Wa9645HJt2bTqL6qYDCKfe"
-
-func TestAddMultipleGCLive(t *testing.T) {
-	r := &repo.Mock{
-		C: config.Config{
-			Identity: config.Identity{
-				PeerID: testPeerID, // required by offline node
-			},
-		},
-		D: syncds.MutexWrap(datastore.NewMapDatastore()),
-	}
-	node, err := core.NewNode(context.Background(), &core.BuildCfg{Repo: r})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	out := make(chan interface{}, 10)
-	adder, err := NewAdder(context.Background(), node.Pinning, node.Blockstore, node.DAG)
-	if err != nil {
-		t.Fatal(err)
-	}
-	adder.Out = out
-
-	// make two files with pipes so we can 'pause' the add for timing of the test
-	piper1, pipew1 := io.Pipe()
-	hangfile1 := files.NewReaderFile(piper1)
-
-	piper2, pipew2 := io.Pipe()
-	hangfile2 := files.NewReaderFile(piper2)
-
-	rfc := files.NewBytesFile([]byte("testfileA"))
-
-	slf := files.NewMapDirectory(map[string]files.Node{
-		"a": hangfile1,
-		"b": hangfile2,
-		"c": rfc,
-	})
-
-	go func() {
-		defer close(out)
-		_, _ = adder.AddAllAndPin(context.Background(), slf)
-		// Ignore errors for clarity - the real bug would be gc'ing files while adding them, not this resultant error
-	}()
-
-	// Start writing the first file but don't close the stream
-	if _, err := pipew1.Write([]byte("some data for file a")); err != nil {
-		t.Fatal(err)
-	}
-
-	var gc1out <-chan gc.Result
-	gc1started := make(chan struct{})
-	go func() {
-		defer close(gc1started)
-		gc1out = gc.GC(context.Background(), node.Blockstore, node.Repo.Datastore(), node.Pinning, nil)
-	}()
-
-	// GC shouldn't get the lock until after the file is completely added
-	select {
-	case <-gc1started:
-		t.Fatal("gc shouldn't have started yet")
-	default:
-	}
-
-	// finish write and unblock gc
-	pipew1.Close()
-
-	// Should have gotten the lock at this point
-	<-gc1started
-
-	removedHashes := make(map[string]struct{})
-	for r := range gc1out {
-		if r.Error != nil {
-			t.Fatal(err)
-		}
-		removedHashes[r.KeyRemoved.String()] = struct{}{}
-	}
-
-	if _, err := pipew2.Write([]byte("some data for file b")); err != nil {
-		t.Fatal(err)
-	}
-
-	var gc2out <-chan gc.Result
-	gc2started := make(chan struct{})
-	go func() {
-		defer close(gc2started)
-		gc2out = gc.GC(context.Background(), node.Blockstore, node.Repo.Datastore(), node.Pinning, nil)
-	}()
-
-	select {
-	case <-gc2started:
-		t.Fatal("gc shouldn't have started yet")
-	default:
-	}
-
-	pipew2.Close()
-
-	<-gc2started
-
-	for r := range gc2out {
-		if r.Error != nil {
-			t.Fatal(err)
-		}
-		removedHashes[r.KeyRemoved.String()] = struct{}{}
-	}
-
-	for o := range out {
-		if _, ok := removedHashes[o.(*coreiface.AddEvent).Path.Cid().String()]; ok {
-			t.Fatal("gc'ed a hash we just added")
-		}
-	}
-}
-
-func TestAddGCLive(t *testing.T) {
-	r := &repo.Mock{
-		C: config.Config{
-			Identity: config.Identity{
-				PeerID: testPeerID, // required by offline node
-			},
-		},
-		D: syncds.MutexWrap(datastore.NewMapDatastore()),
-	}
-	node, err := core.NewNode(context.Background(), &core.BuildCfg{Repo: r})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	out := make(chan interface{})
-	adder, err := NewAdder(context.Background(), node.Pinning, node.Blockstore, node.DAG)
-	if err != nil {
-		t.Fatal(err)
-	}
-	adder.Out = out
-
-	rfa := files.NewBytesFile([]byte("testfileA"))
-
-	// make two files with pipes so we can 'pause' the add for timing of the test
-	piper, pipew := io.Pipe()
-	hangfile := files.NewReaderFile(piper)
-
-	rfd := files.NewBytesFile([]byte("testfileD"))
-
-	slf := files.NewMapDirectory(map[string]files.Node{
-		"a": rfa,
-		"b": hangfile,
-		"d": rfd,
-	})
-
-	addDone := make(chan struct{})
-	go func() {
-		defer close(addDone)
-		defer close(out)
-		_, err := adder.AddAllAndPin(context.Background(), slf)
-
-		if err != nil {
-			t.Error(err)
-		}
-
-	}()
-
-	addedHashes := make(map[string]struct{})
-	select {
-	case o := <-out:
-		addedHashes[o.(*coreiface.AddEvent).Path.Cid().String()] = struct{}{}
-	case <-addDone:
-		t.Fatal("add shouldn't complete yet")
-	}
-
-	var gcout <-chan gc.Result
-	gcstarted := make(chan struct{})
-	go func() {
-		defer close(gcstarted)
-		gcout = gc.GC(context.Background(), node.Blockstore, node.Repo.Datastore(), node.Pinning, nil)
-	}()
-
-	// gc shouldn't start until we let the add finish its current file.
-	if _, err := pipew.Write([]byte("some data for file b")); err != nil {
-		t.Fatal(err)
-	}
-
-	select {
-	case <-gcstarted:
-		t.Fatal("gc shouldn't have started yet")
-	default:
-	}
-
-	time.Sleep(time.Millisecond * 100) // make sure gc gets to requesting lock
-
-	// finish write and unblock gc
-	pipew.Close()
-
-	// receive next object from adder
-	o := <-out
-	addedHashes[o.(*coreiface.AddEvent).Path.Cid().String()] = struct{}{}
-
-	<-gcstarted
-
-	for r := range gcout {
-		if r.Error != nil {
-			t.Fatal(err)
-		}
-		if _, ok := addedHashes[r.KeyRemoved.String()]; ok {
-			t.Fatal("gc'ed a hash we just added")
-		}
-	}
-
-	var last cid.Cid
-	for a := range out {
-		// wait for it to finish
-		c, err := cid.Decode(a.(*coreiface.AddEvent).Path.Cid().String())
-		if err != nil {
-			t.Fatal(err)
-		}
-		last = c
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-
-	set := cid.NewSet()
-	err = dag.Walk(ctx, dag.GetLinksWithDAG(node.DAG), last, set.Visit)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
 
 func testAddWPosInfo(t *testing.T, rawLeaves bool) {
 	r := &repo.Mock{
