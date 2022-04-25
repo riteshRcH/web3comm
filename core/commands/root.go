@@ -143,14 +143,11 @@ var rootSubcommands = map[string]*cmds.Command{
 	"refs":      RefsCmd,
 	"resolve":   ResolveCmd,
 	"swarm":     SwarmCmd,
-	"tar":       TarCmd,
 	"file":      unixfs.UnixFSCmd,
 	"update":    ExternalBinary("Please see https://git.io/fjylH for installation instructions."),
 	"urlstore":  urlStoreCmd,
 	"version":   VersionCmd,
 	"shutdown":  daemonShutdownCmd,
-	"cid":       CidCmd,
-	"multibase": MbaseCmd,
 }
 
 // RootRO is the readonly version of Root
