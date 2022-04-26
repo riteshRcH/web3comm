@@ -7,8 +7,6 @@ import (
 	dag "github.com/ipfs/go-ipfs/core/commands/dag"
 	name "github.com/ipfs/go-ipfs/core/commands/name"
 	ocmd "github.com/ipfs/go-ipfs/core/commands/object"
-	"github.com/ipfs/go-ipfs/core/commands/pin"
-	unixfs "github.com/ipfs/go-ipfs/core/commands/unixfs"
 
 	cmds "github.com/ipfs/go-ipfs-cmds"
 	logging "github.com/ipfs/go-log"
@@ -21,7 +19,6 @@ var ErrNotOnline = errors.New("this command must be run in online mode. Try runn
 const (
 	ConfigOption  = "config"
 	DebugOption   = "debug"
-	LocalOption   = "local" // DEPRECATED: use OfflineOption
 	OfflineOption = "offline"
 	ApiOption     = "api"
 )
@@ -41,12 +38,6 @@ BASIC COMMANDS
 
 DATA STRUCTURE COMMANDS
   dag           Interact with IPLD DAG nodes
-  files         Interact with files as if they were a unix filesystem
-  block         Interact with raw blocks in the datastore
-
-TEXT ENCODING COMMANDS
-  cid           Convert and discover properties of CIDs
-  multibase     Encode and decode data with Multibase format
 
 ADVANCED COMMANDS
   daemon        Start a long-running daemon process
@@ -54,10 +45,8 @@ ADVANCED COMMANDS
   name          Publish and resolve IPNS names
   key           Create and list IPNS name keypairs
   dns           Resolve DNS links
-  pin           Pin objects to local storage
   stats         Various operational stats
   p2p           Libp2p stream mounting
-  filestore     Manage the filestore (experimental)
 
 NETWORK COMMANDS
   id            Show info about IPFS peers
@@ -97,7 +86,6 @@ The CLI will exit with one of the following values:
 		cmds.BoolOption(DebugOption, "D", "Operate in debug mode."),
 		cmds.BoolOption(cmds.OptLongHelp, "Show the full command help text."),
 		cmds.BoolOption(cmds.OptShortHelp, "Show a short version of the command help text."),
-		cmds.BoolOption(LocalOption, "L", "Run the command locally, instead of using the daemon. DEPRECATED: use --offline."),
 		cmds.BoolOption(OfflineOption, "Run the command offline."),
 		cmds.StringOption(ApiOption, "Use a specific API instance (defaults to /ip4/127.0.0.1/tcp/5001)"),
 
@@ -117,11 +105,8 @@ var CommandsDaemonCmd = CommandsCmd(Root)
 var rootSubcommands = map[string]*cmds.Command{
 	"add":       AddCmd,
 	"bitswap":   BitswapCmd,
-	"block":     BlockCmd,
 	"cat":       CatCmd,
 	"commands":  CommandsDaemonCmd,
-	"files":     FilesCmd,
-	"filestore": FileStoreCmd,
 	"get":       GetCmd,
 	"pubsub":    PubsubCmd,
 	"stats":     StatsCmd,
@@ -134,20 +119,15 @@ var rootSubcommands = map[string]*cmds.Command{
 	"id":        IDCmd,
 	"key":       KeyCmd,
 	"log":       LogCmd,
-	"ls":        LsCmd,
 	"name":      name.NameCmd,
 	"object":    ocmd.ObjectCmd,
-	"pin":       pin.PinCmd,
 	"ping":      PingCmd,
 	"p2p":       P2PCmd,
 	"refs":      RefsCmd,
 	"resolve":   ResolveCmd,
 	"swarm":     SwarmCmd,
-	"file":      unixfs.UnixFSCmd,
 	"update":    ExternalBinary("Please see https://git.io/fjylH for installation instructions."),
-	"urlstore":  urlStoreCmd,
 	"version":   VersionCmd,
-	"shutdown":  daemonShutdownCmd,
 }
 
 // RootRO is the readonly version of Root
@@ -164,15 +144,8 @@ var VersionROCmd = &cmds.Command{}
 var rootROSubcommands = map[string]*cmds.Command{
 	"commands": CommandsDaemonROCmd,
 	"cat":      CatCmd,
-	"block": {
-		Subcommands: map[string]*cmds.Command{
-			"stat": blockStatCmd,
-			"get":  blockGetCmd,
-		},
-	},
-	"get": GetCmd,
-	"dns": DNSCmd,
-	"ls":  LsCmd,
+	"get":      GetCmd,
+	"dns":      DNSCmd,
 	"name": {
 		Subcommands: map[string]*cmds.Command{
 			"resolve": name.IpnsCmd,
