@@ -105,7 +105,6 @@ var CommandsDaemonCmd = CommandsCmd(Root)
 var rootSubcommands = map[string]*cmds.Command{
 	"add":       AddCmd,
 	"bitswap":   BitswapCmd,
-	"cat":       CatCmd,
 	"commands":  CommandsDaemonCmd,
 	"get":       GetCmd,
 	"pubsub":    PubsubCmd,
@@ -143,7 +142,6 @@ var VersionROCmd = &cmds.Command{}
 
 var rootROSubcommands = map[string]*cmds.Command{
 	"commands": CommandsDaemonROCmd,
-	"cat":      CatCmd,
 	"get":      GetCmd,
 	"dns":      DNSCmd,
 	"name": {
