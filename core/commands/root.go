@@ -31,7 +31,6 @@ var Root = &cmds.Command{
 BASIC COMMANDS
   init          Initialize local IPFS configuration
   add <path>    Add a file to IPFS
-  cat <ref>     Show IPFS object data
   get <ref>     Download IPFS objects
   ls <ref>      List links from an object
   refs <ref>    List hashes of links from an object
@@ -103,7 +102,6 @@ The CLI will exit with one of the following values:
 var CommandsDaemonCmd = CommandsCmd(Root)
 
 var rootSubcommands = map[string]*cmds.Command{
-	"add":       AddCmd,
 	"bitswap":   BitswapCmd,
 	"commands":  CommandsDaemonCmd,
 	"get":       GetCmd,

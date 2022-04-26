@@ -54,7 +54,6 @@ may also specify the level of compression by specifying '-l=<1-9>'.
 		cmds.BoolOption(archiveOptionName, "a", "Output a TAR archive."),
 		cmds.BoolOption(compressOptionName, "C", "Compress the output with GZIP compression."),
 		cmds.IntOption(compressionLevelOptionName, "l", "The level of compression (1-9)."),
-		cmds.BoolOption(progressOptionName, "p", "Stream progress data.").WithDefault(true),
 	},
 	PreRun: func(req *cmds.Request, env cmds.Environment) error {
 		_, err := getCompressOptions(req)
@@ -115,7 +114,6 @@ may also specify the level of compression by specifying '-l=<1-9>'.
 			}
 
 			archive, _ := req.Options[archiveOptionName].(bool)
-			progress, _ := req.Options[progressOptionName].(bool)
 
 			gw := getWriter{
 				Out:         os.Stdout,
@@ -123,7 +121,6 @@ may also specify the level of compression by specifying '-l=<1-9>'.
 				Archive:     archive,
 				Compression: cmplvl,
 				Size:        int64(res.Length()),
-				Progress:    progress,
 			}
 
 			return gw.Write(outReader, outPath)
