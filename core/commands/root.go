@@ -32,7 +32,6 @@ BASIC COMMANDS
   init          Initialize local IPFS configuration
   add <path>    Add a file to IPFS
   get <ref>     Download IPFS objects
-  ls <ref>      List links from an object
   refs <ref>    List hashes of links from an object
 
 DATA STRUCTURE COMMANDS
@@ -48,7 +47,6 @@ ADVANCED COMMANDS
   p2p           Libp2p stream mounting
 
 NETWORK COMMANDS
-  id            Show info about IPFS peers
   bootstrap     Add or remove bootstrap peers
   swarm         Manage connections to the p2p network
   dht           Query the DHT for values or peers
@@ -113,9 +111,7 @@ var rootSubcommands = map[string]*cmds.Command{
 	"dht":       DhtCmd,
 	"diag":      DiagCmd,
 	"dns":       DNSCmd,
-	"id":        IDCmd,
 	"key":       KeyCmd,
-	"log":       LogCmd,
 	"name":      name.NameCmd,
 	"object":    ocmd.ObjectCmd,
 	"ping":      PingCmd,
