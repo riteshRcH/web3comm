@@ -55,10 +55,6 @@ NETWORK COMMANDS
 TOOL COMMANDS
   config        Manage configuration
   version       Show IPFS version information
-  diag          Generate diagnostic reports
-  update        Download and apply go-ipfs updates
-  commands      List all available commands
-  log           Manage and show logs of running daemon
 
 Use 'ipfs <command> --help' to learn more about each command.
 
@@ -94,11 +90,7 @@ The CLI will exit with one of the following values:
 	},
 }
 
-// commandsDaemonCmd is the "ipfs commands" command for daemon
-var CommandsDaemonCmd = CommandsCmd(Root)
-
 var rootSubcommands = map[string]*cmds.Command{
-	"commands":  CommandsDaemonCmd,
 	"get":       GetCmd,
 	"pubsub":    PubsubCmd,
 	"stats":     StatsCmd,
@@ -106,7 +98,6 @@ var rootSubcommands = map[string]*cmds.Command{
 	"config":    ConfigCmd,
 	"dag":       dag.DagCmd,
 	"dht":       DhtCmd,
-	"diag":      DiagCmd,
 	"dns":       DNSCmd,
 	"key":       KeyCmd,
 	"name":      name.NameCmd,
@@ -116,14 +107,11 @@ var rootSubcommands = map[string]*cmds.Command{
 	"refs":      RefsCmd,
 	"resolve":   ResolveCmd,
 	"swarm":     SwarmCmd,
-	"update":    ExternalBinary("Please see https://git.io/fjylH for installation instructions."),
 	"version":   VersionCmd,
 }
 
 // RootRO is the readonly version of Root
 var RootRO = &cmds.Command{}
-
-var CommandsDaemonROCmd = CommandsCmd(RootRO)
 
 // RefsROCmd is `ipfs refs` command
 var RefsROCmd = &cmds.Command{}
@@ -132,9 +120,8 @@ var RefsROCmd = &cmds.Command{}
 var VersionROCmd = &cmds.Command{}
 
 var rootROSubcommands = map[string]*cmds.Command{
-	"commands": CommandsDaemonROCmd,
-	"get":      GetCmd,
-	"dns":      DNSCmd,
+	"get": GetCmd,
+	"dns": DNSCmd,
 	"name": {
 		Subcommands: map[string]*cmds.Command{
 			"resolve": name.IpnsCmd,

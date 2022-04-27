@@ -14,15 +14,11 @@ var Root = &cmds.Command{
 	Helptext: commands.Root.Helptext,
 }
 
-// commandsClientCmd is the "ipfs commands" command for local cli
-var commandsClientCmd = commands.CommandsCmd(Root)
-
 // Commands in localCommands should always be run locally (even if daemon is running).
 // They can override subcommands in commands.Root by defining a subcommand with the same name.
 var localCommands = map[string]*cmds.Command{
-	"daemon":   daemonCmd,
-	"init":     initCmd,
-	"commands": commandsClientCmd,
+	"daemon": daemonCmd,
+	"init":   initCmd,
 }
 
 func init() {
