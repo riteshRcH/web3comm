@@ -30,7 +30,6 @@ var Root = &cmds.Command{
 		Subcommands: `
 BASIC COMMANDS
   init          Initialize local IPFS configuration
-  get <ref>     Download IPFS objects
   refs <ref>    List hashes of links from an object
 
 DATA STRUCTURE COMMANDS
@@ -91,7 +90,6 @@ The CLI will exit with one of the following values:
 }
 
 var rootSubcommands = map[string]*cmds.Command{
-	"get":       GetCmd,
 	"pubsub":    PubsubCmd,
 	"stats":     StatsCmd,
 	"bootstrap": BootstrapCmd,
@@ -104,7 +102,6 @@ var rootSubcommands = map[string]*cmds.Command{
 	"object":    ocmd.ObjectCmd,
 	"ping":      PingCmd,
 	"p2p":       P2PCmd,
-	"refs":      RefsCmd,
 	"resolve":   ResolveCmd,
 	"swarm":     SwarmCmd,
 	"version":   VersionCmd,
@@ -120,7 +117,6 @@ var RefsROCmd = &cmds.Command{}
 var VersionROCmd = &cmds.Command{}
 
 var rootROSubcommands = map[string]*cmds.Command{
-	"get": GetCmd,
 	"dns": DNSCmd,
 	"name": {
 		Subcommands: map[string]*cmds.Command{
@@ -153,11 +149,6 @@ func init() {
 	// this was in the big map definition above before,
 	// but if we leave it there lgc.NewCommand will be executed
 	// before the value is updated (:/sanitize readonly refs command/)
-
-	// sanitize readonly refs command
-	*RefsROCmd = *RefsCmd
-	RefsROCmd.Subcommands = map[string]*cmds.Command{}
-	rootROSubcommands["refs"] = RefsROCmd
 
 	// sanitize readonly version command (no need to expose precise deps)
 	*VersionROCmd = *VersionCmd
