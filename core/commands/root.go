@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	cmdenv "github.com/ipfs/go-ipfs/core/commands/cmdenv"
-	dag "github.com/ipfs/go-ipfs/core/commands/dag"
 	name "github.com/ipfs/go-ipfs/core/commands/name"
 	ocmd "github.com/ipfs/go-ipfs/core/commands/object"
 
@@ -31,9 +30,6 @@ var Root = &cmds.Command{
 BASIC COMMANDS
   init          Initialize local IPFS configuration
   refs <ref>    List hashes of links from an object
-
-DATA STRUCTURE COMMANDS
-  dag           Interact with IPLD DAG nodes
 
 ADVANCED COMMANDS
   daemon        Start a long-running daemon process
@@ -94,7 +90,6 @@ var rootSubcommands = map[string]*cmds.Command{
 	"stats":     StatsCmd,
 	"bootstrap": BootstrapCmd,
 	"config":    ConfigCmd,
-	"dag":       dag.DagCmd,
 	"dht":       DhtCmd,
 	"dns":       DNSCmd,
 	"key":       KeyCmd,
@@ -129,14 +124,6 @@ var rootROSubcommands = map[string]*cmds.Command{
 			"links": ocmd.ObjectLinksCmd,
 			"get":   ocmd.ObjectGetCmd,
 			"stat":  ocmd.ObjectStatCmd,
-		},
-	},
-	"dag": {
-		Subcommands: map[string]*cmds.Command{
-			"get":     dag.DagGetCmd,
-			"resolve": dag.DagResolveCmd,
-			"stat":    dag.DagStatCmd,
-			"export":  dag.DagExportCmd,
 		},
 	},
 	"resolve": ResolveCmd,
