@@ -29,7 +29,6 @@ var Root = &cmds.Command{
 		Subcommands: `
 BASIC COMMANDS
   init          Initialize local IPFS configuration
-  refs <ref>    List hashes of links from an object
 
 ADVANCED COMMANDS
   daemon        Start a long-running daemon process
