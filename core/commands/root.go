@@ -30,7 +30,6 @@ var Root = &cmds.Command{
 		Subcommands: `
 BASIC COMMANDS
   init          Initialize local IPFS configuration
-  add <path>    Add a file to IPFS
   get <ref>     Download IPFS objects
   refs <ref>    List hashes of links from an object
 
@@ -51,7 +50,6 @@ NETWORK COMMANDS
   swarm         Manage connections to the p2p network
   dht           Query the DHT for values or peers
   ping          Measure the latency of a connection
-  bitswap       Inspect bitswap state
   pubsub        Send and receive messages via pubsub
 
 TOOL COMMANDS
@@ -100,7 +98,6 @@ The CLI will exit with one of the following values:
 var CommandsDaemonCmd = CommandsCmd(Root)
 
 var rootSubcommands = map[string]*cmds.Command{
-	"bitswap":   BitswapCmd,
 	"commands":  CommandsDaemonCmd,
 	"get":       GetCmd,
 	"pubsub":    PubsubCmd,
