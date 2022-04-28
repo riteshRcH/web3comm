@@ -501,9 +501,6 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 		"commit":  version.CurrentCommit,
 	}).Set(1)
 
-	// start MFS pinning thread
-	startPinMFS(daemonConfigPollInterval, cctx, &ipfsPinMFSNode{node})
-
 	// The daemon is *finally* ready.
 	fmt.Printf("Daemon is ready\n")
 	notifyReady()
