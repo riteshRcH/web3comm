@@ -70,7 +70,6 @@ environment variable:
 	},
 	NoRemote: true,
 	Extra:    commands.CreateCmdExtras(commands.SetDoesNotUseRepo(true), commands.SetDoesNotUseConfigAsInput(true)),
-	PreRun:   commands.DaemonNotRunning,
 	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
 		cctx := env.(*oldcmds.Context)
 		empty, _ := req.Options[emptyRepoOptionName].(bool)

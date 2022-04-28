@@ -91,7 +91,6 @@ var rootSubcommands = map[string]*cmds.Command{
 	"config":    ConfigCmd,
 	"dht":       DhtCmd,
 	"dns":       DNSCmd,
-	"key":       KeyCmd,
 	"name":      name.NameCmd,
 	"object":    ocmd.ObjectCmd,
 	"ping":      PingCmd,
