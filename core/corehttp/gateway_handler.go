@@ -293,20 +293,6 @@ func (i *gatewayHandler) getOrHeadHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Detect when If-None-Match HTTP header allows returning HTTP 304 Not Modified
-	if inm := r.Header.Get("If-None-Match"); inm != "" {
-		pathCid := resolvedPath.Cid()
-		// need to check against both File and Dir Etag variants
-		// because this inexpensive check happens before we do any I/O
-		cidEtag := getEtag(r, pathCid)
-		dirEtag := getDirListingEtag(pathCid)
-		if etagMatch(inm, cidEtag, dirEtag) {
-			// Finish early if client already has a matching Etag
-			w.WriteHeader(http.StatusNotModified)
-			return
-		}
-	}
-
 	if err := i.handleGettingFirstBlock(r, begin, contentPath, resolvedPath); err != nil {
 		webRequestError(w, err)
 		return

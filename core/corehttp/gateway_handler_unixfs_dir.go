@@ -9,9 +9,7 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	cid "github.com/ipfs/go-cid"
 	files "github.com/ipfs/go-ipfs-files"
-	"github.com/ipfs/go-ipfs/assets"
 	path "github.com/ipfs/go-path"
 	"github.com/ipfs/go-path/resolver"
 	ipath "github.com/ipfs/interface-go-ipfs-core/path"
@@ -86,10 +84,6 @@ func (i *gatewayHandler) serveDirectory(ctx context.Context, w http.ResponseWrit
 	// A HTML directory index will be presented, be sure to set the correct
 	// type instead of relying on autodetection (which may fail).
 	w.Header().Set("Content-Type", "text/html")
-
-	// Generated dir index requires custom Etag (output may change between go-ipfs versions)
-	dirEtag := getDirListingEtag(resolvedPath.Cid())
-	w.Header().Set("Etag", dirEtag)
 
 	if r.Method == http.MethodHead {
 		logger.Debug("return as request's HTTP method is HEAD")
@@ -190,8 +184,4 @@ func (i *gatewayHandler) serveDirectory(ctx context.Context, w http.ResponseWrit
 		internalWebError(w, err)
 		return
 	}
-}
-
-func getDirListingEtag(dirCid cid.Cid) string {
-	return `"DirIndex-` + assets.AssetHash + `_CID-` + dirCid.String() + `"`
 }
