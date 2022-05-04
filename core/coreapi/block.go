@@ -3,18 +3,14 @@ package coreapi
 import (
 	"bytes"
 	"context"
-	"errors"
 	"io"
 	"io/ioutil"
 
 	blocks "github.com/ipfs/go-block-format"
-	cid "github.com/ipfs/go-cid"
 	pin "github.com/ipfs/go-ipfs-pinner"
 	coreiface "github.com/ipfs/interface-go-ipfs-core"
 	caopts "github.com/ipfs/interface-go-ipfs-core/options"
 	path "github.com/ipfs/interface-go-ipfs-core/path"
-
-	util "github.com/ipfs/go-ipfs/blocks/blockstoreutil"
 )
 
 type BlockAPI CoreAPI
@@ -79,42 +75,7 @@ func (api *BlockAPI) Get(ctx context.Context, p path.Path) (io.Reader, error) {
 }
 
 func (api *BlockAPI) Rm(ctx context.Context, p path.Path, opts ...caopts.BlockRmOption) error {
-
-	rp, err := api.core().ResolvePath(ctx, p)
-	if err != nil {
-		return err
-	}
-
-	settings, err := caopts.BlockRmOptions(opts...)
-	if err != nil {
-		return err
-	}
-	cids := []cid.Cid{rp.Cid()}
-	o := util.RmBlocksOpts{Force: settings.Force}
-
-	out, err := util.RmBlocks(ctx, api.blockstore, api.pinning, cids, o)
-	if err != nil {
-		return err
-	}
-
-	select {
-	case res, ok := <-out:
-		if !ok {
-			return nil
-		}
-
-		remBlock, ok := res.(*util.RemovedBlock)
-		if !ok {
-			return errors.New("got unexpected output from util.RmBlocks")
-		}
-
-		if remBlock.Error != nil {
-			return remBlock.Error
-		}
-		return nil
-	case <-ctx.Done():
-		return ctx.Err()
-	}
+	return nil
 }
 
 func (api *BlockAPI) Stat(ctx context.Context, p path.Path) (coreiface.BlockStat, error) {
