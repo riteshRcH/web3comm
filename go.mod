@@ -2,7 +2,6 @@ module github.com/ipfs/go-ipfs
 
 require (
 	github.com/blang/semver/v4 v4.0.0
-	github.com/cespare/xxhash v1.1.0
 	github.com/cheggaaa/pb v1.0.29
 	github.com/coreos/go-systemd/v22 v22.3.2
 	github.com/dustin/go-humanize v1.0.0
